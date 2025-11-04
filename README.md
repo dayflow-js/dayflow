@@ -2,7 +2,7 @@
 
 A flexible and feature-rich calendar component library for React applications with drag-and-drop support, multiple views, and plugin architecture.
 
-[![npm version](https://img.shields.io/npm/v/dayflow.svg)](https://www.npmjs.com/package/dayflow)
+[![npm version](https://img.shields.io/npm/v/%40dayflow%2Fcore.svg)](https://www.npmjs.com/package/@dayflow/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features

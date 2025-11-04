@@ -656,7 +656,7 @@ const RangePicker: React.FC<RangePickerProps> = ({
     return (
       <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm sm:w-28">
         <div className="flex border-b border-slate-100 justify-center">
-          <div className='text-lg py-2'>{current.hour}:{current.minute}</div>
+          <div className='text-lg py-1'>{current.hour.toString().padStart(2, '0')}:{current.minute.toString().padStart(2, '0')}</div>
         </div>
 
         {/* Hour and Minute Selectors */}
@@ -846,11 +846,10 @@ const RangePicker: React.FC<RangePickerProps> = ({
     <div
       ref={popupRef}
       style={getPopupStyle()}
-      className="max-w-[400px]"
       data-rangepicker-popup="true"
     >
       <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-3" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}>
-        <div className="flex flex-col gap-1 sm:flex-row">
+        <div className="flex gap-1">
           <div className="flex-3 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
             <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
               <div className="flex items-center gap-1">

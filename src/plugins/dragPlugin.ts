@@ -10,20 +10,18 @@ import {
 } from '@/types';
 import { logger } from '@/utils/logger';
 
-// Default configuration
-const defaultDragPluginConfig: DragPluginConfig = {
-  enableDrag: true,
-  enableResize: true,
-  enableCreate: true,
-  enableAllDayCreate: true,
-  supportedViews: [ViewType.DAY, ViewType.WEEK, ViewType.MONTH],
-};
-
 // Create drag plugin
 export function createDragPlugin(
   config: Partial<DragPluginConfig> = {}
 ): CalendarPlugin {
-  const finalConfig = { ...defaultDragPluginConfig, ...config };
+  const finalConfig: DragPluginConfig = {
+    enableDrag: true,
+    enableResize: true,
+    enableCreate: true,
+    enableAllDayCreate: true,
+    supportedViews: [ViewType.DAY, ViewType.WEEK, ViewType.MONTH],
+    ...config,
+  };
 
   // Drag service implementation
   const dragService: DragService = {
@@ -113,5 +111,12 @@ export function isDragService(obj: unknown): obj is DragService {
 export function createDragConfig(
   overrides: Partial<DragPluginConfig> = {}
 ): DragPluginConfig {
-  return { ...defaultDragPluginConfig, ...overrides };
+  return {
+    enableDrag: true,
+    enableResize: true,
+    enableCreate: true,
+    enableAllDayCreate: true,
+    supportedViews: [ViewType.DAY, ViewType.WEEK, ViewType.MONTH],
+    ...overrides,
+  };
 }

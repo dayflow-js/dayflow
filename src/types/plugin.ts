@@ -96,6 +96,9 @@ export interface DragPluginConfig {
 
   // View support
   supportedViews: ViewType[];
+
+  // Allow additional properties
+  [key: string]: unknown;
 }
 
 /**

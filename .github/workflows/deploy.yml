@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +40,10 @@ jobs:
           npm run build
         env:
           BASE_PATH: /DayFlow
+
+      - name: Disable Jekyll
+        run: |
+          touch website/out/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

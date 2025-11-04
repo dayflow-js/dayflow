@@ -33,11 +33,7 @@ export function InteractiveCalendar() {
 
   const dragPlugin = useMemo(
     () =>
-      createDragPlugin({
-        enableDrag: true,
-        enableResize: true,
-        enableCreate: true,
-      }),
+      createDragPlugin(),
     []
   );
 
