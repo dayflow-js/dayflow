@@ -9,7 +9,8 @@
     "lint": "node scripts/next-with-cache.js lint"
   },
   "dependencies": {
-    "@dayflow/core": "^0.1.0",
+    "@dayflow/core": "^0.1.1",
+    "lucide-react": "^0.552.0",
     "next": "^14.2.0",
     "nextra": "^2.13.4",
     "nextra-theme-docs": "^2.13.4",
@@ -21,9 +22,9 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.0.0",
     "typescript": "^5.0.0"
   },
   "overrides": {

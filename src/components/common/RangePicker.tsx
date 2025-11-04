@@ -851,7 +851,7 @@ const RangePicker: React.FC<RangePickerProps> = ({
     >
       <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-3" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}>
         <div className="flex flex-col gap-1 sm:flex-row">
-          <div className="flex-3 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+          <div className="flex-2 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
             <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
               <div className="flex items-center gap-1">
                 <button
