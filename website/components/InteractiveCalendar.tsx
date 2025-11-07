@@ -1,16 +1,20 @@
 'use client';
 
 import React, { useMemo } from 'react';
-// Import directly from source files to avoid CSS import in index.ts
-import { useCalendarApp } from '@dayflow/core';
-import { DayFlowCalendar } from '@dayflow/core';
-import { createMonthView } from '@dayflow/core';
-import { createWeekView } from '@dayflow/core';
-import { createDayView } from '@dayflow/core';
-import { createDragPlugin } from '@dayflow/core';
-import { CalendarType, ViewType } from '@dayflow/core';
-import { generateSampleEvents } from '../utils/sampleData';
-import { CALENDAR_SIDE_PANEL } from '../utils/palette';
+import {
+  useCalendarApp,
+  DayFlowCalendar,
+  createDayView,
+  createWeekView,
+  createMonthView,
+  createDragPlugin,
+  CalendarType,
+  ViewType,
+} from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
+
+import { CALENDAR_SIDE_PANEL } from '@/utils/palette';
+import { generateSampleEvents } from '@/utils/sampleData';
 
 const calendarTypes: CalendarType[] = CALENDAR_SIDE_PANEL.map(item => ({
   id: item.id,
@@ -52,12 +56,10 @@ export function InteractiveCalendar() {
 
   return (
     <div className="w-full">
-      <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
-        <DayFlowCalendar
-          calendar={calendar}
-          className="w-full h-[780px]"
-        />
-      </div>
+      <DayFlowCalendar
+        calendar={calendar}
+        className="w-full h-[780px]"
+      />
       <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
         <strong>Tip:</strong> Try dragging events across weeks, resizing them in
         Week view, or switching to Month view to see all-day scheduling in

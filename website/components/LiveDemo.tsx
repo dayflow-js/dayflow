@@ -2,17 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import InteractiveCalendar from './InteractiveCalendar';
 
-const ClientOnlyCalendar = dynamic(
-  () =>
-    import('./ClientOnlyCalendar').then(
-      mod => mod.ClientOnlyCalendar
-    ),
-  { ssr: false }
-);
-
-export function LandingPage() {
+export function LiveDemo() {
   return (
     <div className="mx-auto ">
       <section className="space-y-12 py-16">
@@ -58,7 +50,7 @@ export function LandingPage() {
           </div>
         </div>
         <div className="overflow-hidden ">
-          <ClientOnlyCalendar />
+          <InteractiveCalendar />
         </div>
       </section>
 
