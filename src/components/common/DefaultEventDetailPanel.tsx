@@ -2,9 +2,7 @@ import React, { useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { Temporal } from 'temporal-polyfill';
 import { EventDetailPanelProps } from '@/types/eventDetail';
-import { isMultiDayEvent } from '@/utils/helpers';
 import { isPlainDate } from '@/utils/temporal';
-import { formatDate } from '@/utils/dateFormat';
 import { getDefaultCalendarRegistry } from '@/core/calendarRegistry';
 import ColorPicker, { ColorOption } from './ColorPicker';
 import RangePicker from './RangePicker';
@@ -23,16 +21,6 @@ const DefaultEventDetailPanel: React.FC<EventDetailPanelProps> = ({
   onEventUpdate,
   onEventDelete,
 }) => {
-
-  // Format date range
-  const formatDateRange = () => {
-    // For multi-day events, show date range
-    if (isMultiDayEvent(event.start, event.end)) {
-      return `${formatDate(event.start)} to ${formatDate(event.end)}`;
-    }
-    return formatDate(event.start);
-  };
-
   // Get visible calendar type options
   const colorOptions: ColorOption[] = useMemo(() => {
     const registry = getDefaultCalendarRegistry();
@@ -79,6 +67,37 @@ const DefaultEventDetailPanel: React.FC<EventDetailPanelProps> = ({
       allDay: false,
       start,
       end,
+    });
+  };
+
+  const eventTimeZone = useMemo(() => {
+    if (!isPlainDate(event.start)) {
+      return (
+        (event.start as any).timeZoneId ||
+        (event.start as Temporal.ZonedDateTime).timeZoneId ||
+        Temporal.Now.timeZoneId()
+      );
+    }
+
+    if (event.end && !isPlainDate(event.end)) {
+      return (
+        (event.end as any).timeZoneId ||
+        (event.end as Temporal.ZonedDateTime).timeZoneId ||
+        Temporal.Now.timeZoneId()
+      );
+    }
+
+    return Temporal.Now.timeZoneId();
+  }, [event.end, event.start]);
+
+  const handleAllDayRangeChange = (
+    nextRange: [Temporal.ZonedDateTime, Temporal.ZonedDateTime]
+  ) => {
+    const [start, end] = nextRange;
+    onEventUpdate({
+      ...event,
+      start: start.toPlainDate(),
+      end: end.toPlainDate(),
     });
   };
 
@@ -209,6 +228,7 @@ const DefaultEventDetailPanel: React.FC<EventDetailPanelProps> = ({
     <div
       ref={panelRef}
       className="fixed bg-white shadow-lg border border-gray-200 rounded-lg p-4 "
+      data-event-detail-panel="true"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
@@ -247,10 +267,16 @@ const DefaultEventDetailPanel: React.FC<EventDetailPanelProps> = ({
 
       {isAllDay ? (
         <div className="mb-3">
-          <div className="text-xs text-gray-600 mb-1">Date</div>
-          <div className="text-xs text-gray-900 font-medium">
-            {formatDateRange()}
-          </div>
+          <div className="text-xs text-gray-600 mb-1">Date Range</div>
+          <RangePicker
+            value={[event.start, event.end]}
+            format="YYYY-MM-DD"
+            showTime={false}
+            timeZone={eventTimeZone}
+            matchTriggerWidth
+            onChange={handleAllDayRangeChange}
+            onOk={handleAllDayRangeChange}
+          />
         </div>
       ) : (
         <div className="mb-3">
@@ -258,10 +284,7 @@ const DefaultEventDetailPanel: React.FC<EventDetailPanelProps> = ({
           <RangePicker
             value={[event.start, event.end]}
             timeZone={
-              isPlainDate(event.start)
-                ? Temporal.Now.timeZoneId()
-                : (event.start as any).timeZoneId ??
-                (event.start as Temporal.ZonedDateTime).timeZoneId
+              eventTimeZone
             }
             onChange={(nextRange) => {
               const [start, end] = nextRange;

@@ -43,6 +43,7 @@ interface WeekComponentProps {
   isScrolling: boolean;
   isDragging: boolean;
   item: VirtualWeekItem;
+  weekHeight: number; // Use this instead of item.height to avoid sync issues
   events: Event[];
   dragState: MonthEventDragState;
   calendarRef: React.RefObject<HTMLDivElement | null>;
@@ -249,6 +250,7 @@ const WeekComponent = React.memo<WeekComponentProps>(
     isScrolling,
     isDragging,
     item,
+    weekHeight,
     events,
     dragState,
     calendarRef,
@@ -305,10 +307,10 @@ const WeekComponent = React.memo<WeekComponentProps>(
       };
     }, [isScrolling, shouldShowMonthTitle]);
 
-    const { weekData, height: weekHeight } = item;
+    const { weekData } = item;
     const firstDayOfMonth = weekData.days.find(day => day.day === 1);
 
-    // Use the exact height provided by virtual scrolling
+    // Use the weekHeight prop instead of item.height to avoid jumps from virtual scroll sync delays
     const weekHeightPx = `${weekHeight}px`;
 
     // Analyze multi-day events for the current week
@@ -422,6 +424,7 @@ const WeekComponent = React.memo<WeekComponentProps>(
             <CalendarEvent
               key={`${event.id}-${event.day}-${extractHourFromDate(event.start)}-${index}`}
               event={event}
+              isAllDay={!!event.allDay}
               isMonthView={true}
               calendarRef={calendarRef}
               hourHeight={72}
@@ -556,6 +559,7 @@ const WeekComponent = React.memo<WeekComponentProps>(
                       <CalendarEvent
                         key={segment.id}
                         event={segment.event}
+                        isAllDay={!!segment.event.allDay}
                         segment={segment}
                         segmentIndex={layerIndex}
                         isMonthView={true}

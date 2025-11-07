@@ -135,9 +135,19 @@ const MonthView: React.FC<MonthViewProps> = ({
   // Responsive configuration
   const { screenSize } = useResponsiveMonthConfig();
 
-  // Dynamically calculate weekHeight - based on container height
-  const [weekHeight, setWeekHeight] = useState(119);
-  const previousWeekHeightRef = useRef(119);
+  // Fixed weekHeight to prevent fluctuations during scrolling
+  // Initialize with estimated value based on window height to minimize initial adjustment
+  const [weekHeight, setWeekHeight] = useState(() => {
+    if (typeof window !== 'undefined') {
+      // Estimate container height: viewport height - header/toolbar space
+      const estimatedHeaderHeight = 150;
+      const estimatedContainerHeight = window.innerHeight - estimatedHeaderHeight;
+      return Math.max(80, Math.floor(estimatedContainerHeight / 6));
+    }
+    return 119; // Fallback for SSR
+  });
+  const [isWeekHeightInitialized, setIsWeekHeightInitialized] = useState(false);
+  const previousWeekHeightRef = useRef(weekHeight);
 
   const previousVisibleWeeksRef = useRef<typeof virtualData.visibleItems>([]);
 
@@ -302,7 +312,7 @@ const MonthView: React.FC<MonthViewProps> = ({
     remainingSpace,
   ]);
 
-  // ResizeObserver - Listen for container height changes, dynamically calculate weekHeight
+  // ResizeObserver - Initialize weekHeight and handle container height changes
   useEffect(() => {
     const element = scrollElementRef.current;
     if (!element) return;
@@ -310,30 +320,40 @@ const MonthView: React.FC<MonthViewProps> = ({
     const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const containerHeight = entry.contentRect.height;
-        // Save actual container height
+        // Save actual container height for other calculations
         setActualContainerHeight(containerHeight);
 
-        // Container height ÷ 6 = weekly height (floor)
-        const calculatedWeekHeight = Math.max(
-          80,
-          Math.floor(containerHeight / 6)
-        );
-
-        if (
-          calculatedWeekHeight !== previousWeekHeightRef.current &&
-          previousWeekHeightRef.current !== 0
-        ) {
-          // When weekHeight changes, adjust scrollTop to maintain the same week index
-          const currentWeekIndex = Math.floor(
-            element.scrollTop / previousWeekHeightRef.current
+        // Only initialize weekHeight once to prevent fluctuations during scrolling
+        if (!isWeekHeightInitialized && containerHeight > 0) {
+          const calculatedWeekHeight = Math.max(
+            80,
+            Math.floor(containerHeight / 6)
           );
-          const newScrollTop = currentWeekIndex * calculatedWeekHeight;
-          element.scrollTop = newScrollTop;
-          setScrollTop(newScrollTop);
-        }
 
-        previousWeekHeightRef.current = calculatedWeekHeight;
-        setWeekHeight(calculatedWeekHeight);
+          // If weekHeight changed from initial value, adjust scrollTop to maintain position
+          // Do this synchronously in the same frame to prevent visible jump
+          if (calculatedWeekHeight !== previousWeekHeightRef.current) {
+            const currentScrollTop = element.scrollTop;
+            if (currentScrollTop > 0) {
+              // Calculate which week we're currently showing
+              const currentWeekIndex = Math.round(currentScrollTop / previousWeekHeightRef.current);
+              // Recalculate scrollTop with new weekHeight
+              const newScrollTop = currentWeekIndex * calculatedWeekHeight;
+
+              // Synchronously update both state and DOM
+              element.scrollTop = newScrollTop;
+              setScrollTop(newScrollTop);
+            }
+          }
+
+          setWeekHeight(calculatedWeekHeight);
+          previousWeekHeightRef.current = calculatedWeekHeight;
+
+          // Use requestAnimationFrame to ensure visibility change happens after scrollTop is set
+          requestAnimationFrame(() => {
+            setIsWeekHeightInitialized(true);
+          });
+        }
       }
     });
 
@@ -342,7 +362,7 @@ const MonthView: React.FC<MonthViewProps> = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [scrollElementRef, setScrollTop]);
+  }, [scrollElementRef, isWeekHeightInitialized, setScrollTop]);
 
   const handleEventUpdate = (updatedEvent: Event) => {
     app.updateEvent(updatedEvent.id, updatedEvent);
@@ -385,6 +405,7 @@ const MonthView: React.FC<MonthViewProps> = ({
         style={{
           scrollSnapType: 'y mandatory',
           overflow: 'hidden auto',
+          visibility: isWeekHeightInitialized ? 'visible' : 'hidden',
         }}
         onScroll={handleScroll}
       >
@@ -410,6 +431,7 @@ const MonthView: React.FC<MonthViewProps> = ({
             <WeekComponent
               key={`week-${item.weekData.startDate.getTime()}`}
               item={adjustedItem}
+              weekHeight={weekHeight}
               currentMonth={currentMonth}
               currentYear={currentYear}
               screenSize={screenSize}

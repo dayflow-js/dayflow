@@ -2,9 +2,7 @@ import React, { useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { Temporal } from 'temporal-polyfill';
 import { EventDetailDialogProps } from '@/types/eventDetail';
-import { isMultiDayEvent } from '@/utils/helpers';
 import { isPlainDate } from '@/utils/temporal';
-import { formatDate } from '@/utils/dateFormat';
 import { getDefaultCalendarRegistry } from '@/core/calendarRegistry';
 import ColorPicker, { ColorOption } from './ColorPicker';
 import RangePicker from './RangePicker';
@@ -21,14 +19,6 @@ const DefaultEventDetailDialog: React.FC<EventDetailDialogProps> = ({
   onEventDelete,
   onClose,
 }) => {
-
-  const formatDateRange = () => {
-    // For multi-day events, show date range
-    if (isMultiDayEvent(event.start, event.end)) {
-      return `${formatDate(event.start)} to ${formatDate(event.end)}`;
-    }
-    return formatDate(event.start);
-  };
 
   // Get visible calendar type options
   const colorOptions: ColorOption[] = useMemo(() => {
@@ -76,6 +66,37 @@ const DefaultEventDetailDialog: React.FC<EventDetailDialogProps> = ({
       allDay: false,
       start,
       end,
+    });
+  };
+
+  const eventTimeZone = useMemo(() => {
+    if (!isPlainDate(event.start)) {
+      return (
+        (event.start as any).timeZoneId ||
+        (event.start as Temporal.ZonedDateTime).timeZoneId ||
+        Temporal.Now.timeZoneId()
+      );
+    }
+
+    if (event.end && !isPlainDate(event.end)) {
+      return (
+        (event.end as any).timeZoneId ||
+        (event.end as Temporal.ZonedDateTime).timeZoneId ||
+        Temporal.Now.timeZoneId()
+      );
+    }
+
+    return Temporal.Now.timeZoneId();
+  }, [event.end, event.start]);
+
+  const handleAllDayRangeChange = (
+    nextRange: [Temporal.ZonedDateTime, Temporal.ZonedDateTime]
+  ) => {
+    const [start, end] = nextRange;
+    onEventUpdate({
+      ...event,
+      start: start.toPlainDate(),
+      end: end.toPlainDate(),
     });
   };
 
@@ -169,22 +190,23 @@ const DefaultEventDetailDialog: React.FC<EventDetailDialogProps> = ({
 
           {isAllDay ? (
             <div className="mb-4">
-              <div className="text-xs text-gray-600 mb-1">Date</div>
-              <div className="text-sm text-gray-900 font-medium">
-                {formatDateRange()}
-              </div>
+              <div className="text-xs text-gray-600 mb-1">Date Range</div>
+              <RangePicker
+                value={[event.start, event.end]}
+                format="YYYY-MM-DD"
+                showTime={false}
+                timeZone={eventTimeZone}
+                matchTriggerWidth
+                onChange={handleAllDayRangeChange}
+                onOk={handleAllDayRangeChange}
+              />
             </div>
           ) : (
             <div className="mb-4">
               <div className="text-xs text-gray-600 mb-1">Time Range</div>
               <RangePicker
                 value={[event.start, event.end]}
-                timeZone={
-                  isPlainDate(event.start)
-                    ? Temporal.Now.timeZoneId()
-                    : (event.start as any).timeZoneId ??
-                    (event.start as Temporal.ZonedDateTime).timeZoneId
-                }
+                timeZone={eventTimeZone}
                 onChange={(nextRange) => {
                   const [start, end] = nextRange;
                   onEventUpdate({

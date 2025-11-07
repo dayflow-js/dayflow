@@ -155,6 +155,7 @@ export const EventDetailPanelWithContent: React.FC<
       <div
         ref={panelRef}
         className="fixed bg-white shadow-lg border border-gray-200 rounded-lg p-3"
+        data-event-detail-panel="true"
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,

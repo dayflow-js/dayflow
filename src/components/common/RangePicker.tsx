@@ -36,6 +36,7 @@ export interface RangePickerProps {
   placement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight';
   autoAdjustOverflow?: boolean;
   getPopupContainer?: () => HTMLElement;
+  matchTriggerWidth?: boolean;
 }
 
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm';
@@ -77,10 +78,29 @@ const RangePicker: React.FC<RangePickerProps> = ({
   placement = 'bottomLeft',
   autoAdjustOverflow = true,
   getPopupContainer,
+  matchTriggerWidth = false,
 }) => {
+  const isTimeEnabled = useMemo(() => {
+    if (showTime === undefined) return true;
+    if (typeof showTime === 'object') return true;
+    return Boolean(showTime);
+  }, [showTime]);
+
+  const effectiveTimeFormat = useMemo(() => {
+    if (!isTimeEnabled) {
+      return '';
+    }
+
+    if (typeof showTime === 'object' && showTime?.format) {
+      return showTime.format;
+    }
+
+    return showTimeFormat;
+  }, [isTimeEnabled, showTime, showTimeFormat]);
+
   const formatTemplate = useMemo(
-    () => mergeFormatTemplate(format, showTimeFormat),
-    [format, showTimeFormat]
+    () => mergeFormatTemplate(format, effectiveTimeFormat),
+    [format, effectiveTimeFormat]
   );
 
   const parseRegExp = useMemo(
@@ -106,12 +126,12 @@ const RangePicker: React.FC<RangePickerProps> = ({
   const lastNormalizedRef = useRef<ZonedRange>(normalizedValue);
   const [focusedField, setFocusedField] = useState<'start' | 'end'>('start');
   const [inputValues, setInputValues] = useState<[string, string]>([
-    formatTemporal(normalizedValue[0], format, showTimeFormat),
-    formatTemporal(normalizedValue[1], format, showTimeFormat),
+    formatTemporal(normalizedValue[0], format, effectiveTimeFormat),
+    formatTemporal(normalizedValue[1], format, effectiveTimeFormat),
   ]);
   const inputValuesRef = useRef<[string, string]>([
-    formatTemporal(normalizedValue[0], format, showTimeFormat),
-    formatTemporal(normalizedValue[1], format, showTimeFormat),
+    formatTemporal(normalizedValue[0], format, effectiveTimeFormat),
+    formatTemporal(normalizedValue[1], format, effectiveTimeFormat),
   ]);
   const draftRangeRef = useRef<ZonedRange>(normalizedValue);
   const [visibleMonth, setVisibleMonth] = useState<Temporal.PlainDate>(
@@ -203,9 +223,9 @@ const RangePicker: React.FC<RangePickerProps> = ({
 
   // Scroll when panel opens or field changes (but NOT when draftRange changes to avoid interfering with user clicks)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !isTimeEnabled) return;
     scrollToActiveTime(focusedField);
-  }, [focusedField, isOpen, scrollToActiveTime]);
+  }, [focusedField, isOpen, scrollToActiveTime, isTimeEnabled]);
 
   const draftStartEpoch = draftRange[0].epochMilliseconds;
   const draftStartOffset = draftRange[0].offsetNanoseconds;
@@ -214,8 +234,12 @@ const RangePicker: React.FC<RangePickerProps> = ({
 
   useEffect(() => {
     const [currentStart, currentEnd] = draftRangeRef.current;
-    const nextStart = formatTemporal(currentStart, format, showTimeFormat);
-    const nextEnd = formatTemporal(currentEnd, format, showTimeFormat);
+    const nextStart = formatTemporal(
+      currentStart,
+      format,
+      effectiveTimeFormat
+    );
+    const nextEnd = formatTemporal(currentEnd, format, effectiveTimeFormat);
     const [prevStart, prevEnd] = inputValuesRef.current;
 
     if (prevStart === nextStart && prevEnd === nextEnd) {
@@ -230,7 +254,7 @@ const RangePicker: React.FC<RangePickerProps> = ({
     draftEndEpoch,
     draftEndOffset,
     format,
-    showTimeFormat,
+    effectiveTimeFormat,
   ]);
 
   useEffect(() => {
@@ -282,22 +306,22 @@ const RangePicker: React.FC<RangePickerProps> = ({
     (range: ZonedRange) => {
       if (!onChange) return;
       onChange(range, [
-        formatTemporal(range[0], format, showTimeFormat),
-        formatTemporal(range[1], format, showTimeFormat),
+        formatTemporal(range[0], format, effectiveTimeFormat),
+        formatTemporal(range[1], format, effectiveTimeFormat),
       ]);
     },
-    [format, onChange, showTimeFormat]
+    [effectiveTimeFormat, format, onChange]
   );
 
   const emitOk = useCallback(
     (range: ZonedRange) => {
       if (!onOk) return;
       onOk(range, [
-        formatTemporal(range[0], format, showTimeFormat),
-        formatTemporal(range[1], format, showTimeFormat),
+        formatTemporal(range[0], format, effectiveTimeFormat),
+        formatTemporal(range[1], format, effectiveTimeFormat),
       ]);
     },
-    [format, onOk, showTimeFormat]
+    [effectiveTimeFormat, format, onOk]
   );
 
   const updateRange = useCallback(
@@ -526,12 +550,16 @@ const RangePicker: React.FC<RangePickerProps> = ({
 
       setInputValues(prev => {
         const next: [string, string] = [...prev] as [string, string];
-        next[index] = formatTemporal(draftRange[index], format, showTimeFormat);
+        next[index] = formatTemporal(
+          draftRange[index],
+          format,
+          effectiveTimeFormat
+        );
         return next;
       });
       return false;
     },
-    [draftRange, format, parseRegExp, showTimeFormat, updateRange]
+    [draftRange, effectiveTimeFormat, format, parseRegExp, updateRange]
   );
 
   const handleInputChange = useCallback(
@@ -736,7 +764,9 @@ const RangePicker: React.FC<RangePickerProps> = ({
 
       const triggerRect = containerRef.current.getBoundingClientRect();
       const popupHeight = 500; // Approximate popup height
-      const popupWidth = 480; // Approximate popup width
+      const popupWidth = matchTriggerWidth
+        ? triggerRect.width
+        : 480; // Approximate popup width
 
       const spaceBelow = window.innerHeight - triggerRect.bottom;
       const spaceAbove = triggerRect.top;
@@ -775,7 +805,7 @@ const RangePicker: React.FC<RangePickerProps> = ({
 
       return finalPlacement;
     },
-    [autoAdjustOverflow, placement]
+    [autoAdjustOverflow, matchTriggerWidth, placement]
   );
 
   const adjustPopupPlacement = useCallback(() => {
@@ -839,6 +869,10 @@ const RangePicker: React.FC<RangePickerProps> = ({
       style.right = window.innerWidth - triggerRect.right;
     }
 
+    if (matchTriggerWidth) {
+      style.width = `${triggerRect.width}px`;
+    }
+
     return style;
   };
 
@@ -848,7 +882,13 @@ const RangePicker: React.FC<RangePickerProps> = ({
       style={getPopupStyle()}
       data-rangepicker-popup="true"
     >
-      <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-3" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}>
+      <div
+        className="space-y-3 rounded-xl border border-slate-200 bg-white p-3"
+        style={{
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          width: matchTriggerWidth ? '100%' : undefined,
+        }}
+      >
         <div className="flex gap-1">
           <div className="flex-3 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
             <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
@@ -902,9 +942,11 @@ const RangePicker: React.FC<RangePickerProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-1 justify-end sm:w-32">
-            {renderTimeSelectors()}
-          </div>
+          {isTimeEnabled && (
+            <div className="flex flex-1 justify-end sm:w-32">
+              {renderTimeSelectors()}
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end">
