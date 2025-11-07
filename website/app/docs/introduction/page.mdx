@@ -8,7 +8,7 @@ Welcome to Day Flow! This guide will help you get up and running quickly.
 
 Install the package using your preferred package manager:
 
-```bash
+```bash copy
 npm install @dayflow/core lucide-react
 # or
 yarn add @dayflow/core lucide-react
@@ -22,13 +22,13 @@ DayFlow uses Tailwind CSS for styling. You need to set up Tailwind CSS in your p
 
 **1. Install Tailwind CSS dependencies:**
 
-```bash
+```bash copy
 npm install -D tailwindcss @tailwindcss/postcss autoprefixer
 ```
 
 **2. Create `postcss.config.mjs` in your project root:**
 
-```js
+```js copy
 const config = {
   plugins: ['@tailwindcss/postcss'],
 };
@@ -38,7 +38,7 @@ export default config;
 
 **3. Import Tailwind in your CSS file:**
 
-```css
+```css copy
 /* src/index.css or src/App.css */
 @import 'tailwindcss';
 ```
@@ -47,14 +47,14 @@ export default config;
 
 **Important:** You must import the DayFlow styles in your application. Add this import to your main App component or layout file:
 
-```tsx
+```tsx copy
 // In App.tsx or layout.tsx
 import '@dayflow/core/dist/styles.css';
 ```
 
 Alternatively, you can import it in your CSS file:
 
-```css
+```css copy
 /* src/index.css */
 @import '@dayflow/core/dist/styles.css';
 ```
@@ -63,7 +63,7 @@ Alternatively, you can import it in your CSS file:
 
 Import and use the Calendar component in your React application:
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -117,7 +117,7 @@ function App() {
 
 You can easily create and pass events to the calendar:
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,

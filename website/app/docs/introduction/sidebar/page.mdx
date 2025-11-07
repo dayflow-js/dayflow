@@ -25,7 +25,7 @@ The DayFlow sidebar surfaces multiple calendar sources, upcoming events, and any
 
 Set `useSidebar` to `true` (or supply options) when creating your calendar application. The default sidebar includes visibility toggles, color chips, and collapse support out of the box.
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -57,7 +57,7 @@ You can still access every runtime control (`toggleCalendarVisibility`, `toggleA
 
 When you need a fully bespoke experience (filters, analytics, team shortcuts, etc.), provide a `render` callback. It receives the current calendar app instance, calendar collection, and helper callbacks.
 
-```tsx
+```tsx copy
 import type { CalendarSidebarRenderProps } from '@dayflow/core';
 
 const CustomSidebar = ({

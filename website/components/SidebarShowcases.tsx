@@ -40,7 +40,7 @@ const BASE_CALENDARS: CalendarType[] = [
   {
     id: 'personal',
     name: 'Personal',
-    icon: '🌿',
+    icon: '❤️',
     colors: {
       eventColor: 'rgba(14,165,233,0.12)',
       eventSelectedColor: 'rgba(14,165,233,0.25)',
@@ -270,11 +270,10 @@ const CustomSidebarPanel: React.FC<CalendarSidebarRenderProps> = ({
               onClick={() =>
                 toggleCalendarVisibility(calendar.id, !calendar.isVisible)
               }
-              className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm shadow-sm transition ${
-                calendar.isVisible
+              className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm shadow-sm transition ${calendar.isVisible
                   ? 'border-slate-700 bg-slate-900/70 hover:border-slate-600'
                   : 'border-slate-800 bg-slate-950 hover:border-slate-800/80 text-slate-500'
-              }`}
+                }`}
             >
               <span className="inline-flex items-center gap-2">
                 <span className="text-lg leading-none">

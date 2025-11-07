@@ -9,7 +9,7 @@ The library uses the Temporal API for all date/time handling. Events support thr
 - **PlainDateTime**: For local events (date + time, no timezone) ✨ **Recommended for most use cases**
 - **ZonedDateTime**: For timezone-aware events (international meetings, flights, etc.)
 
-```tsx
+```tsx copy
 import { Temporal } from 'temporal-polyfill';
 import { Event } from '@dayflow/core';
 ```
@@ -32,7 +32,7 @@ import { Event } from '@dayflow/core';
 
 Use the `createEvent()` helper for most use cases:
 
-```tsx
+```tsx copy
 import { createEvent, createAllDayEvent, createTimedEvent } from '@dayflow/core';
 
 // Local timed event (no timezone complexity)
@@ -63,7 +63,7 @@ const lunch = createTimedEvent(
 
 For more control, use Temporal API directly:
 
-```tsx
+```tsx copy
 import { Temporal } from 'temporal-polyfill';
 import { Event } from '@dayflow/core';
 
@@ -101,7 +101,7 @@ const timezoneEvent: Event = {
 
 ### Event with Metadata
 
-```tsx
+```tsx copy
 import { createEvent } from '@dayflow/core';
 
 const event = createEvent({
@@ -122,7 +122,7 @@ const event = createEvent({
 
 ### Adding Events
 
-```tsx
+```tsx copy
 // Add a single event
 calendar.addEvent(event);
 
@@ -135,7 +135,7 @@ const calendar = useCalendarApp({
 
 ### Updating Events
 
-```tsx
+```tsx copy
 // Update an event
 calendar.updateEvent('event-id', {
   title: 'Updated Meeting Title',
@@ -149,14 +149,14 @@ calendar.updateEvent('event-id', updatedEvent, true);
 
 ### Deleting Events
 
-```tsx
+```tsx copy
 // Delete an event by ID
 calendar.deleteEvent('event-id');
 ```
 
 ### Getting Events
 
-```tsx
+```tsx copy
 // Get all events
 const events = calendar.getEvents();
 
@@ -168,7 +168,7 @@ const { events } = calendar;
 
 Day Flow provides callbacks to handle event lifecycle:
 
-```tsx
+```tsx copy
 import { useCalendarApp, createMonthView, Event } from '@dayflow/core';
 
 const calendar = useCalendarApp({
@@ -198,7 +198,7 @@ const calendar = useCalendarApp({
 
 ### Using React State
 
-```tsx
+```tsx copy
 import { useState } from 'react';
 import {
   useCalendarApp,
@@ -232,7 +232,7 @@ function MyCalendar() {
 
 ### Syncing with Backend
 
-```tsx
+```tsx copy
 import { useCalendarApp, createMonthView, Event } from '@dayflow/core';
 
 const calendar = useCalendarApp({
@@ -275,7 +275,7 @@ const calendar = useCalendarApp({
 
 Customize event appearance by assigning events to different calendar types using `calendarId`. Each calendar type can have its own color scheme and styling:
 
-```tsx
+```tsx copy
 import { createEvent } from '@dayflow/core';
 
 // Work event
@@ -333,7 +333,7 @@ const calendar = useCalendarApp({
 
 Events can span multiple days:
 
-```tsx
+```tsx copy
 import { Temporal } from 'temporal-polyfill';
 import { Event } from '@dayflow/core';
 
@@ -361,7 +361,7 @@ const crossMidnightEvent: Event = {
 
 Store additional information in the `meta` field:
 
-```tsx
+```tsx copy
 import { Temporal } from 'temporal-polyfill';
 import { Event } from '@dayflow/core';
 

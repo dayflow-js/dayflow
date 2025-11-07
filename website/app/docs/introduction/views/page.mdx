@@ -25,7 +25,7 @@ The month view displays a traditional calendar grid showing all days in a month.
 - Resize events
 - All-day events support
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -66,7 +66,7 @@ The week view displays a 7-day grid with time slots, showing events with their e
 - Double-click to create events
 - Collision detection and smart event positioning
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -112,7 +112,7 @@ The day view focuses on a single day with detailed time slots, perfect for manag
 - Left side (70%): Time grid with events
 - Right side (30%): Mini calendar and event list
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -151,7 +151,7 @@ The year view displays all 12 months of a year in a grid layout.
 - Selected date highlighting
 - Keyboard shortcuts (Arrow keys, Home, PageUp/Down)
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -174,7 +174,7 @@ function MyCalendar() {
 
 You can register multiple views and allow users to switch between them:
 
-```tsx
+```tsx copy
 import {
   useCalendarApp,
   DayFlowCalendar,
@@ -233,7 +233,7 @@ function MultiViewCalendar() {
 
 ### Changing Views
 
-```tsx
+```tsx copy
 // Change to a specific view
 calendar.changeView(ViewType.WEEK);
 
@@ -246,7 +246,7 @@ console.log(currentView.type); // 'week'
 
 All views support the same navigation methods:
 
-```tsx
+```tsx copy
 // Go to today
 calendar.goToToday();
 
@@ -264,7 +264,7 @@ calendar.selectDate(new Date(2024, 9, 15));
 
 ### Month View
 
-```tsx
+```tsx copy
 // Month view supports virtual scrolling
 // Automatically loads weeks as user scrolls
 // Optimized for 3+ years of data
@@ -272,7 +272,7 @@ calendar.selectDate(new Date(2024, 9, 15));
 
 ### Week View
 
-```tsx
+```tsx copy
 // Week view shows precise timing
 // Time slots from 0:00 to 24:00
 // Configurable hour range
@@ -280,7 +280,7 @@ calendar.selectDate(new Date(2024, 9, 15));
 
 ### Day View
 
-```tsx
+```tsx copy
 // Day view includes mini calendar for quick navigation
 // Event list shows all events for selected day
 // Side panel for better focus
@@ -288,7 +288,7 @@ calendar.selectDate(new Date(2024, 9, 15));
 
 ### Year View
 
-```tsx
+```tsx copy
 // Year view keyboard shortcuts
 // Arrow Up/Down: Previous/Next year
 // Home: Go to today
@@ -303,7 +303,7 @@ All views are responsive and adapt to different screen sizes:
 - **Tablet**: Adjusted grid layouts and spacing
 - **Mobile**: Optimized for touch interactions and smaller screens
 
-```tsx
+```tsx copy
 // Views automatically detect screen size and adjust:
 // - Month View: Adjusts week height and event display
 // - Week View: Maintains usability with touch-friendly event cards
@@ -313,7 +313,7 @@ All views are responsive and adapt to different screen sizes:
 
 ## ViewType Enum
 
-```tsx
+```tsx copy
 enum ViewType {
   DAY = 'day',
   WEEK = 'week',

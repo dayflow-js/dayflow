@@ -20,7 +20,7 @@ DayFlow comes with a powerful built-in event dialog that provides a complete eve
 
 The default event dialog is automatically available when you use the DayFlowCalendar component. Simply click on any event to open the dialog, or use the calendar's API to create new events.
 
-```tsx
+```tsx copy
 import { DayFlowCalendar } from '@dayflow/core';
 
 <DayFlowCalendar
@@ -51,7 +51,7 @@ Add rich text descriptions to provide context and details for each event.
 
 While the default dialog covers most use cases, you can completely replace it with your own implementation using the `customEventDetailDialog` prop. See the [Custom Event Detail Dialog](/features/custom-detail-dialog) page for details.
 
-```tsx
+```tsx copy
 <DayFlowCalendar
   calendar={calendar}
   customEventDetailDialog={YourCustomDialog}
