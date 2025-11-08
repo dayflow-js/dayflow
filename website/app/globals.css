@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @layer l-base {
   :root {
@@ -28,4 +28,4 @@ html body[data-scroll-locked] {
 .nextra-code pre {
   background-color: hsl(var(--primary) / 0.05);
   box-shadow: none;
-} */
+}
