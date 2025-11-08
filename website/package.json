@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build-dev": "next build && npx serve@latest out",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
-    "@dayflow/core": "^0.1.3",
+    "@dayflow/core": "^0.1.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.552.0",

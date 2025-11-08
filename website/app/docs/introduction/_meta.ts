@@ -7,15 +7,22 @@ const meta: MetaRecord = {
   events: {
     title: "Events"
   },
-  'plugins': {
+  plugins: {
     title: "Plugins"
   },
-  'sidebar': {
+  sidebar: {
     title: "Sidebar"
   },
-  'views': {
+  views: {
     title: "Views"
-  }
+  },
+  'dayflow-calendar': {
+    title: 'DayFlowCalendar'
+  },
+  'use-calendar-app': {
+    title: 'useCalendarApp'
+  },
+
 
 }
 

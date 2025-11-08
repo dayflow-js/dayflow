@@ -37,6 +37,7 @@ import {
   createMonthView,
   ViewType,
 } from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
 
 function MyCalendar() {
   const dragPlugin = createDragPlugin({
@@ -119,6 +120,7 @@ import {
   createEventsPlugin,
   createMonthView,
 } from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
 
 function MyCalendar() {
   const eventsPlugin = createEventsPlugin({
@@ -206,6 +208,7 @@ import {
   createMonthView,
   createWeekView,
 } from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
 
 function MyCalendar() {
   const dragPlugin = createDragPlugin({
@@ -241,6 +244,7 @@ import {
   createEventsPlugin,
   createMonthView,
 } from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
 
 function MyCalendar() {
   const dragPlugin = createDragPlugin({
@@ -365,7 +369,11 @@ export function createAnalyticsPlugin(
 ### Using Custom Plugin
 
 ```tsx copy
-import { useCalendarApp, DayFlowCalendar, createMonthView } from '@dayflow/core';
+import {
+  useCalendarApp,
+  DayFlowCalendar,
+  createMonthView,
+} from '@dayflow/core';
 
 function MyCalendar() {
   const analyticsPlugin = createAnalyticsPlugin({

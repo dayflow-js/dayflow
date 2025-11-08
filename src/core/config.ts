@@ -1,4 +1,5 @@
 import { CalendarConfig } from '@/types';
+import { getLineColor as resolveLineColor } from '@/utils/colorUtils';
 
 export const defaultDragConfig = {
   HOUR_HEIGHT: 72,
@@ -8,20 +9,8 @@ export const defaultDragConfig = {
   TIME_COLUMN_WIDTH: 80,
   ALL_DAY_HEIGHT: 28,
 
-  getLineColor: (color: string) => {
-    const colorMap = {
-      blue: '#3b82f6',
-      green: '#10b981',
-      purple: '#8b5cf6',
-      yellow: '#f59e0b',
-      red: '#ef4444',
-      orange: '#f97316',
-      pink: '#ec4899',
-      teal: '#14b8a6',
-      indigo: '#6366f1',
-    };
-    return colorMap[color as keyof typeof colorMap] || '#6b7280';
-  },
+  // line color via Calendar Registry
+  getLineColor: (color: string) => resolveLineColor(color),
 
   getDynamicPadding: (drag: { endHour: number; startHour: number }) => {
     const duration = drag.endHour - drag.startHour;

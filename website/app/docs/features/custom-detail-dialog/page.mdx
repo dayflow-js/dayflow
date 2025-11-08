@@ -114,10 +114,7 @@ const CustomDialog: EventDetailDialogRenderer = ({
   );
 };
 
-<DayFlowCalendar
-  calendar={calendar}
-  customEventDetailDialog={CustomDialog}
-/>;
+<DayFlowCalendar calendar={calendar} customEventDetailDialog={CustomDialog} />;
 ```
 
 Clicking an event now launches your custom dialog while preserving the default lifecycle.
