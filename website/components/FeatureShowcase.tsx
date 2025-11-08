@@ -61,7 +61,7 @@ const createSampleEvents = (): Event[] => {
         timeZone: 'UTC',
         plainTime: Temporal.PlainTime.from('11:00'),
       }),
-      calendarId: '#2563eb',
+      calendarId: 'blue',
       meta: {
         owner: 'Alice',
         location: 'Room 301',
@@ -80,7 +80,7 @@ const createSampleEvents = (): Event[] => {
         timeZone: 'UTC',
         plainTime: Temporal.PlainTime.from('15:30'),
       }),
-      calendarId: '#10b981',
+      calendarId: 'green',
       meta: {
         owner: 'Brian',
         location: 'Zoom',
@@ -99,7 +99,7 @@ const createSampleEvents = (): Event[] => {
         timeZone: 'UTC',
         plainTime: Temporal.PlainTime.from('13:00'),
       }),
-      calendarId: '#f97316',
+      calendarId: 'orange',
       meta: {
         owner: 'Chiara',
         location: 'Local Bistro',
@@ -113,7 +113,7 @@ const createSampleEvents = (): Event[] => {
       start: allDayStart,
       end: allDayEnd,
       allDay: true,
-      calendarId: '#8b5cf6',
+      calendarId: 'purple',
       meta: {
         owner: 'Diego',
         location: 'Online',
@@ -341,7 +341,26 @@ export const CustomDetailDialogShowcase: React.FC = () => {
       if (!isOpen) return null;
 
       const meta = event.meta ?? {};
-      const accentColor = '#6366f1';
+      const colorPresets = [
+        { id: 'blue', color: '#6366f1' },
+        { id: 'orange', color: '#f97316' },
+        { id: 'green', color: '#22c55e' },
+        { id: 'teal', color: '#0ea5e9' },
+        { id: 'red', color: '#ef4444' },
+      ];
+      const accentColor =
+        colorPresets.find(preset => {
+          if (event.calendarId === preset.id) return true;
+          if (typeof event.calendarId === 'string') {
+            return (
+              event.calendarId.toLowerCase() === preset.color.toLowerCase()
+            );
+          }
+          return false;
+        })?.color ||
+        (typeof event.calendarId === 'string' && event.calendarId.startsWith('#')
+          ? event.calendarId
+          : '#6366f1');
 
       const toJsDate = (
         value: Event['start'] | Event['end']
@@ -467,7 +486,6 @@ export const CustomDetailDialogShowcase: React.FC = () => {
         )
       ).slice(0, 4);
 
-      const colorPresets = ['#6366f1', '#f97316', '#22c55e', '#0ea5e9', '#ef4444'];
       const isFavorite = Boolean(meta.favorite);
       const location = meta.location ?? 'To be announced';
 
@@ -506,6 +524,7 @@ export const CustomDetailDialogShowcase: React.FC = () => {
           ...event,
           calendarId,
         });
+        onClose();
       };
 
       const handleDelete = () => {
@@ -518,14 +537,23 @@ export const CustomDetailDialogShowcase: React.FC = () => {
           className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/60 px-4 py-6 backdrop-blur-md sm:py-10"
           data-event-detail-dialog="true"
         >
-          <div className="relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5">
+          <div className="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5">
             <div
-              className="absolute inset-x-0 top-0 h-48"
+              className="absolute inset-x-0 top-0 h-40"
               style={{
                 background: `linear-gradient(135deg, ${accentColor}, #0f172a)`,
               }}
             />
-            <div className="relative px-7 pt-8 pb-4 text-white sm:px-9">
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:right-6 sm:top-6 z-10"
+              aria-label="Close dialog"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="relative px-7 pt-9 pb-4 text-white sm:px-9">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div className="space-y-3">
                   <span className="inline-flex items-center text-xs font-semibold uppercase tracking-[0.25em] text-white/70">
@@ -551,7 +579,7 @@ export const CustomDetailDialogShowcase: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex w-full justify-end gap-2 sm:w-auto">
+                <div className="flex w-full justify-end sm:w-auto">
                   <button
                     type="button"
                     onClick={handleToggleFavorite}
@@ -568,22 +596,15 @@ export const CustomDetailDialogShowcase: React.FC = () => {
                       <StarOff className="h-5 w-5" />
                     )}
                   </button>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                    aria-label="Close dialog"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
                 </div>
               </div>
             </div>
 
-            <div className="relative grid gap-6 px-7 pb-7 sm:px-9 sm:pb-9 lg:grid-cols-[1.6fr,1fr]">
-              <div className="space-y-5">
-                <div className="rounded-2xl border border-gray-100 bg-white/60 p-5 shadow-sm backdrop-blur">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <div className="relative flex-1 overflow-y-auto px-7 pb-7 sm:px-9 sm:pb-9">
+              <div className="grid gap-6 lg:grid-cols-[1.6fr,1fr]">
+                <div className="space-y-5">
+                  <div className="rounded-2xl border border-gray-100 bg-white/60 p-5 shadow-sm backdrop-blur">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Schedule
                   </h3>
                   <div className="mt-4 space-y-4">
@@ -699,20 +720,22 @@ export const CustomDetailDialogShowcase: React.FC = () => {
                     Update highlight colors to match your brand palette.
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {colorPresets.map(color => {
-                      const isActive = accentColor.toLowerCase() === color.toLowerCase();
+                    {colorPresets.map(({ id, color }) => {
+                      const isActive =
+                        event.calendarId === id ||
+                        (typeof event.calendarId === 'string' &&
+                          event.calendarId.toLowerCase() ===
+                            color.toLowerCase());
                       return (
                         <button
-                          key={color}
+                          key={id}
                           type="button"
-                          onClick={() => handleUpdateColor(color)}
+                          onClick={() => handleUpdateColor(id)}
                           className={`h-9 w-9 rounded-full border-2 border-white shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                            isActive
-                              ? 'ring-2 ring-offset-2 ring-offset-white'
-                              : ''
+                            isActive ? 'ring-2 ring-offset-white' : ''
                           }`}
                           style={{ backgroundColor: color }}
-                          aria-label={`Change color to ${color}`}
+                          aria-label={`Change color to ${id}`}
                         />
                       );
                     })}
@@ -748,21 +771,10 @@ export const CustomDetailDialogShowcase: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-100 bg-gray-50 px-7 py-4 sm:px-9">
-              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900"
-                >
-                  Close
-                </button>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                  <span>Need more? Swap in your design system dialog.</span>
                 </div>
+              </div>
+              <div className="mt-6 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-500">
+                Need more? Swap in your design system dialog.
               </div>
             </div>
           </div>

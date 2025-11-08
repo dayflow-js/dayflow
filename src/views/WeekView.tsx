@@ -547,7 +547,7 @@ const WeekView: React.FC<WeekViewProps> = ({
                           className="h-0.5 w-full relative"
                           style={{
                             backgroundColor:
-                              idx === todayIndex ? '#C53030' : '#fdedeb',
+                              idx === todayIndex ? '#C53030' : '#fdedebcc',
                             zIndex: 9999,
                           }}
                         >

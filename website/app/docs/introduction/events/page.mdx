@@ -5,6 +5,7 @@ Events are the core data structure in Day Flow. Learn how to create, update, del
 ## Event Interface
 
 The library uses the Temporal API for all date/time handling. Events support three Temporal types:
+
 - **PlainDate**: For all-day events (no time)
 - **PlainDateTime**: For local events (date + time, no timezone) ✨ **Recommended for most use cases**
 - **ZonedDateTime**: For timezone-aware events (international meetings, flights, etc.)
@@ -14,17 +15,17 @@ import { Temporal } from 'temporal-polyfill';
 import { Event } from '@dayflow/core';
 ```
 
-| Property      | Type                                                               | Description                                                                                                    | Required |
-| ------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | -------- |
-| `id`          | `string`                                                           | Unique identifier for the event                                                                                | ✅ Yes   |
-| `title`       | `string`                                                           | Event title displayed in the calendar                                                                          | ✅ Yes   |
+| Property      | Type                                                                     | Description                                                                                                       | Required |
+| ------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- | -------- |
+| `id`          | `string`                                                                 | Unique identifier for the event                                                                                   | ✅ Yes   |
+| `title`       | `string`                                                                 | Event title displayed in the calendar                                                                             | ✅ Yes   |
 | `start`       | `Temporal.PlainDate \| Temporal.PlainDateTime \| Temporal.ZonedDateTime` | Event start date/time. Use `PlainDate` for all-day, `PlainDateTime` for local, `ZonedDateTime` for timezone-aware | ✅ Yes   |
-| `end`         | `Temporal.PlainDate \| Temporal.PlainDateTime \| Temporal.ZonedDateTime` | Event end date/time                                                                                            | ✅ Yes   |
-| `description` | `string`                                                           | Optional event description or notes                                                                            | ❌ No    |
-| `allDay`      | `boolean`                                                          | Whether this is an all-day event (default: `false`)                                                            | ❌ No    |
-| `calendarId`  | `string`                                                           | Calendar type reference for multi-calendar support                                                             | ❌ No    |
-| `meta`        | `Record<string, any>`                                              | Additional custom metadata (location, attendees, custom fields, etc.)                                          | ❌ No    |
-| `day`         | `number`                                                           | Internal field: week day index (0-6), auto-calculated by the system                                            | ❌ No    |
+| `end`         | `Temporal.PlainDate \| Temporal.PlainDateTime \| Temporal.ZonedDateTime` | Event end date/time                                                                                               | ✅ Yes   |
+| `description` | `string`                                                                 | Optional event description or notes                                                                               | ❌ No    |
+| `allDay`      | `boolean`                                                                | Whether this is an all-day event (default: `false`)                                                               | ❌ No    |
+| `calendarId`  | `string`                                                                 | Calendar type reference for multi-calendar support                                                                | ❌ No    |
+| `meta`        | `Record<string, any>`                                                    | Additional custom metadata (location, attendees, custom fields, etc.)                                             | ❌ No    |
+| `day`         | `number`                                                                 | Internal field: week day index (0-6), auto-calculated by the system                                               | ❌ No    |
 
 ## Creating Events
 
@@ -33,29 +34,30 @@ import { Event } from '@dayflow/core';
 Use the `createEvent()` helper for most use cases:
 
 ```tsx copy
-import { createEvent, createAllDayEvent, createTimedEvent } from '@dayflow/core';
+import {
+  createEvent,
+  createAllDayEvent,
+  createTimedEvent,
+} from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
 
 // Local timed event (no timezone complexity)
 const meeting = createEvent({
   id: '1',
   title: 'Team Meeting',
   start: new Date(2024, 9, 15, 10, 0), // October 15, 2024, 10:00 AM
-  end: new Date(2024, 9, 15, 11, 0),   // October 15, 2024, 11:00 AM
+  end: new Date(2024, 9, 15, 11, 0), // October 15, 2024, 11:00 AM
 });
 
 // All-day event
-const holiday = createAllDayEvent(
-  '2',
-  'Conference',
-  new Date(2024, 9, 20)
-);
+const holiday = createAllDayEvent('2', 'Conference', new Date(2024, 9, 20));
 
 // Quick timed event
 const lunch = createTimedEvent(
   '3',
   'Lunch Break',
   new Date(2024, 9, 15, 12, 0), // 12:00 PM
-  new Date(2024, 9, 15, 13, 0)  // 1:00 PM
+  new Date(2024, 9, 15, 13, 0) // 1:00 PM
 );
 ```
 
@@ -72,12 +74,18 @@ const localEvent: Event = {
   id: '1',
   title: 'Team Meeting',
   start: Temporal.PlainDateTime.from({
-    year: 2024, month: 10, day: 15,
-    hour: 10, minute: 0
+    year: 2024,
+    month: 10,
+    day: 15,
+    hour: 10,
+    minute: 0,
   }),
   end: Temporal.PlainDateTime.from({
-    year: 2024, month: 10, day: 15,
-    hour: 11, minute: 0
+    year: 2024,
+    month: 10,
+    day: 15,
+    hour: 11,
+    minute: 0,
   }),
 };
 
@@ -413,12 +421,10 @@ const event: Event = {
 
 For detailed information about date/time handling, see:
 
-- [Temporal Migration Guide](/docs/temporal-migration) - Complete guide to Temporal API
 - Event interface: `/src/types/event.ts`
 
 ## Related Documentation
 
-- [Temporal Migration](/docs/temporal-migration) - Migrating from Date to Temporal API
 - [Views](/docs/views) - Understanding calendar views
 - [Plugins](/docs/plugins) - Event management with plugins
 - [Getting Started](/docs/getting-started) - Basic usage examples

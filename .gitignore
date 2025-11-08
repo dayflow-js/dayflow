@@ -35,3 +35,5 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+/bundle-analysis.html

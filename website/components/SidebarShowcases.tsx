@@ -271,8 +271,8 @@ const CustomSidebarPanel: React.FC<CalendarSidebarRenderProps> = ({
                 toggleCalendarVisibility(calendar.id, !calendar.isVisible)
               }
               className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm shadow-sm transition ${calendar.isVisible
-                  ? 'border-slate-700 bg-slate-900/70 hover:border-slate-600'
-                  : 'border-slate-800 bg-slate-950 hover:border-slate-800/80 text-slate-500'
+                ? 'border-slate-700 bg-slate-900/70 hover:border-slate-600'
+                : 'border-slate-800 bg-slate-950 hover:border-slate-800/80 text-slate-500'
                 }`}
             >
               <span className="inline-flex items-center gap-2">
@@ -338,7 +338,7 @@ const CustomSidebarPanel: React.FC<CalendarSidebarRenderProps> = ({
 const ShowcaseWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+  <div className="mt-6">
     {children}
   </div>
 );

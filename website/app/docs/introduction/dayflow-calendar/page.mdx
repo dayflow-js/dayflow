@@ -1,0 +1,95 @@
+# DayFlowCalendar Component
+
+`DayFlowCalendar` is the high-level React component that renders the currently selected view, handles layout, and wires optional UI like the sidebar or event detail dialog. Pair it with `useCalendarApp` and the view factory helpers to get a fully functioning calendar with minimal code.
+
+## Basic Usage
+
+```tsx copy
+import {
+  DayFlowCalendar,
+  useCalendarApp,
+  createWeekView,
+  ViewType,
+} from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
+
+export function CalendarDemo() {
+  const calendar = useCalendarApp({
+    views: [createWeekView()],
+    defaultView: ViewType.WEEK,
+    initialDate: new Date(),
+    events: [],
+    useSidebar: true,
+  });
+
+  return <DayFlowCalendar calendar={calendar} />;
+}
+```
+
+The component receives the `calendar` object from `useCalendarApp`, reads the active view, and renders the corresponding view component. Any toolbar or custom UI can live beside `DayFlowCalendar`, but it already includes:
+
+- An optional calendar sidebar (controlled through `useSidebar`).
+- Event detail dialog support (driven by `useEventDetailDialog` or a custom renderer).
+- Automatic layout updates when calendars are toggled or views change.
+
+## Props
+
+| Prop                       | Type                         | Required | Description                                                                                         |
+| -------------------------- | ---------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `calendar`                 | `UseCalendarAppReturn`       | ✅       | Result of `useCalendarApp`. Provides state, registered views, sidebar config, and calendar actions. |
+| `className`                | `string`                     | ❌       | Additional class names applied to the root container.                                               |
+| `style`                    | `React.CSSProperties`        | ❌       | Inline styles for the root container (useful for explicit heights).                                 |
+| `customDetailPanelContent` | `EventDetailContentRenderer` | ❌       | Replaces the default detail panel body when the built-in panel is used.                             |
+| `customEventDetailDialog`  | `EventDetailDialogRenderer`  | ❌       | Full override for the event detail dialog UI. Takes precedence over `useEventDetailDialog`.         |
+| `meta`                     | `Record<string, any>`        | ❌       | Arbitrary metadata forwarded to every view component (helpful for feature flags or layout hints).   |
+
+## Sidebar Behavior
+
+The sidebar is controlled by the `useSidebar` option passed to `useCalendarApp`:
+
+```tsx copy
+const calendar = useCalendarApp({
+  views: [createWeekView()],
+  useSidebar: {
+    width: 280,
+    initialCollapsed: false,
+  },
+});
+
+return <DayFlowCalendar calendar={calendar} />;
+```
+
+- When `useSidebar` is `true`, the default sidebar (`DefaultCalendarSidebar`) is rendered with calendar filters and toggle-all controls.
+- When `useSidebar` is a `SidebarConfig`, you can customize width, default collapsed state, or supply your own renderer via `render(props)`. Your renderer receives the same `CalendarSidebarRenderProps` DayFlow uses internally, so you can reuse its helper callbacks and data.
+
+## Event Detail Experiences
+
+DayFlow ships with two options for event details:
+
+1. **Default panel mode** – when `useEventDetailDialog` is `false`, each view may render `DefaultEventDetailPanel`. Pass `customDetailPanelContent` to replace the panel body while keeping the default chrome.
+2. **Dialog mode** – set `useEventDetailDialog: true` in `useCalendarApp` to enable the built-in modal (`DefaultEventDetailDialog`). You can fully replace it by passing `customEventDetailDialog`. The hook will still manage open/close state and scroll locking; you just render the dialog.
+
+```tsx copy
+<DayFlowCalendar
+  calendar={calendar}
+  customEventDetailDialog={({ event, close }) => (
+    <MyDialog isOpen={!!event} onClose={close}>
+      <EventForm event={event} onSubmit={handleSave} />
+    </MyDialog>
+  )}
+/>
+```
+
+## Passing Metadata to Views
+
+Some teams need to share contextual data with every registered view (e.g., feature flags, analytics handlers, or layout hints). Use the `meta` prop and read it inside your custom view components:
+
+```tsx copy
+<DayFlowCalendar calendar={calendar} meta={{ featureFlags: ['split-pane'] }} />
+```
+
+Inside a view component, the metadata is available through `props.meta` and can be forwarded to child components as needed.
+
+---
+
+In short, `DayFlowCalendar` handles the orchestration layer—layout, sidebar wiring, and event detail plumbing—so you can focus on configuring `useCalendarApp` and building the surrounding product experience.

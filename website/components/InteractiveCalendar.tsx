@@ -22,7 +22,7 @@ const calendarTypes: CalendarType[] = CALENDAR_SIDE_PANEL.map(item => ({
   icon: item.icon,
   colors: {
     eventColor: `${item.color}20`,
-    eventSelectedColor: `${item.color}40`,
+    eventSelectedColor: `${item.color}`,
     lineColor: item.color,
     textColor: item.color,
   },

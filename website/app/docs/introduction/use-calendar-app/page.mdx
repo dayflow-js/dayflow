@@ -1,0 +1,163 @@
+# useCalendarApp Reference
+
+`useCalendarApp(config: CalendarAppConfig)` is the hook that connects the DayFlow core to your React components. Pass a single configuration object to register views, feed initial events, toggle optional UI, and connect lifecycle callbacks. This guide breaks down every available option.
+
+## Quick Start
+
+```tsx copy
+import {
+  useCalendarApp,
+  DayFlowCalendar,
+  createMonthView,
+  createWeekView,
+  ViewType,
+} from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
+
+export function TeamCalendar() {
+  const calendar = useCalendarApp({
+    views: [createMonthView(), createWeekView()],
+    defaultView: ViewType.MONTH,
+    initialDate: new Date(),
+    events: [],
+  });
+
+  return <DayFlowCalendar calendar={calendar} />;
+}
+```
+
+## Configuration Overview
+
+| Option                 | Type                       | Required | Default                | Description                                                                                                        |
+| ---------------------- | -------------------------- | -------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `views`                | `CalendarView[]`           | ✅       | —                      | Registers the view definitions (e.g., `createMonthView()`). At least one view is required.                         |
+| `plugins`              | `CalendarPlugin[]`         | ❌       | `[]`                   | Installs optional plugins (drag helpers, shortcuts, etc.). Each plugin receives the app instance during `install`. |
+| `events`               | `Event[]`                  | ❌       | `[]`                   | Initial event payload. Use `addEvent`/`updateEvent` afterward to mutate state.                                     |
+| `callbacks`            | `CalendarCallbacks`        | ❌       | `{}`                   | Lifecycle hooks that fire when views, dates, or events change—perfect for syncing with APIs.                       |
+| `defaultView`          | `ViewType`                 | ❌       | `ViewType.WEEK`        | View that loads first; must exist in `views`.                                                                      |
+| `initialDate`          | `Date`                     | ❌       | `new Date()`           | Starting focus date (also seeds visible month calculations).                                                       |
+| `switcherMode`         | `'buttons' \| 'select'`    | ❌       | `'buttons'`            | Controls how the built-in view switcher renders in headers.                                                        |
+| `calendars`            | `CalendarType[]`           | ❌       | `[]`                   | Registers calendar categories (Work, Personal, etc.) with colors and visibility.                                   |
+| `defaultCalendar`      | `string`                   | ❌       | First visible calendar | ID used when new events are created.                                                                               |
+| `theme`                | `ThemeConfig`              | ❌       | `{ mode: 'light' }`    | Sets global theme mode and optional token overrides.                                                               |
+| `useSidebar`           | `boolean \| SidebarConfig` | ❌       | `false`                | Enables the built-in sidebar or lets you customize width, collapse state, and renderer.                            |
+| `useEventDetailDialog` | `boolean`                  | ❌       | `false`                | Enables the default modal detail dialog instead of inline panels.                                                  |
+
+## Key Options
+
+### Views (required)
+
+- Each view is a `CalendarView` object `{ type, component, config }`.
+- DayFlow ships with factories (`createDayView`, `createWeekView`, etc.) that return ready-made definitions.
+- `defaultView` must match one of the registered view types; otherwise the app throws during initialization.
+
+### Events
+
+- The provided array becomes the in-memory `CalendarApp.state.events` list.
+- `useCalendarApp` watches app mutations, so calling `calendar.addEvent()` or `calendar.updateEvent()` automatically syncs React state.
+- Make sure events adhere to the `Event` interface (`start`/`end` accept `PlainDate`, `PlainDateTime`, or `ZonedDateTime`).
+
+### Plugins
+
+- A plugin has `{ name, install(app), config }` and is executed once during construction.
+- Use plugins to register drag handlers, keyboard shortcuts, analytics observers, or expose custom APIs via `app.getPlugin(name)`.
+
+### Callbacks
+
+`callbacks` keep React state in sync with your backend or analytics layer:
+
+- `onViewChange(view)` fires after a successful view switch.
+- `onDateChange(date)` fires whenever the focused date changes (navigation or selection).
+- `onVisibleMonthChange(date)` helps prefetch data as the visible month shifts.
+- `onEventCreate(event)`, `onEventUpdate(event)`, `onEventDelete(id)` mirror CRUD operations—ideal for syncing APIs.
+- `onRender()` executes when the calendar finishes a render pass (useful for instrumentation).
+
+### defaultView & initialDate
+
+- `defaultView` sets the initial `state.currentView`. If omitted, DayFlow falls back to `ViewType.WEEK`, so explicitly set it for single-view calendars.
+- `initialDate` seeds both `state.currentDate` and the internal `visibleMonth`. Override it if you pull the date from routing or user settings.
+
+### switcherMode
+
+- `'buttons'`: renders a horizontal button group, great for desktop.
+- `'select'`: renders a dropdown, perfect when space is limited or you expose many view types.
+
+### calendars, defaultCalendar & theme
+
+- `calendars` defines each calendar type (`id`, `name`, `colors`, visibility). The Calendar Registry automatically picks light/dark colors based on `theme.mode` (`'light' | 'dark' | 'auto'`).
+- `defaultCalendar` determines which calendar new events inherit; if omitted, the first visible calendar wins.
+- `theme.colors` lets you align the UI with brand colors by overriding background/text/border tokens.
+
+### useSidebar
+
+- `true` enables the stock sidebar (240 px wide) with calendar toggles.
+- Passing a `SidebarConfig` lets you control:
+  - `width`: number (auto-suffixed with `px`) or string.
+  - `initialCollapsed`: whether the sidebar starts collapsed.
+  - `render(props)`: replace the sidebar UI entirely while reusing DayFlow's helper props.
+
+### useEventDetailDialog
+
+- `true` turns on the default modal dialog (`DefaultEventDetailDialog`).
+- Combine with `customDetailPanelContent` or `customEventDetailDialog` on `DayFlowCalendar` to swap the UI while keeping the core state machine.
+
+## Advanced Configuration Example
+
+```tsx copy
+import {
+  useCalendarApp,
+  DayFlowCalendar,
+  createMonthView,
+  createWeekView,
+  ViewType,
+} from '@dayflow/core';
+import '@dayflow/core/dist/styles.css';
+
+const calendars = [
+  {
+    id: 'work',
+    name: 'Work',
+    colors: {
+      eventColor: '#2563eb',
+      eventSelectedColor: '#1d4ed8',
+      lineColor: '#1e40af',
+      textColor: '#ffffff',
+    },
+  },
+  {
+    id: 'personal',
+    name: 'Personal',
+    colors: {
+      eventColor: '#f97316',
+      eventSelectedColor: '#ea580c',
+      lineColor: '#c2410c',
+      textColor: '#ffffff',
+    },
+  },
+];
+
+export function AdvancedCalendar() {
+  const calendar = useCalendarApp({
+    views: [createMonthView(), createWeekView()],
+    defaultView: ViewType.WEEK,
+    initialDate: new Date('2024-10-01'),
+    events: [],
+    calendars,
+    defaultCalendar: 'work',
+    switcherMode: 'select',
+    callbacks: {
+      onEventUpdate: event => api.events.update(event),
+      onVisibleMonthChange: month => preloadMonthData(month),
+    },
+    useSidebar: {
+      width: 280,
+      initialCollapsed: false,
+    },
+    useEventDetailDialog: true,
+  });
+
+  return <DayFlowCalendar calendar={calendar} />;
+}
+```
+
+> Tip: The object returned by `useCalendarApp` exposes both state (`currentView`, `currentDate`, `events`) and actions. Share the same instance with `DayFlowCalendar`, your own toolbar, and side panels to keep everything synchronized.
