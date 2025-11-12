@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useCallback } from 'react';
+import { useTheme } from 'next-themes';
 import { Temporal } from 'temporal-polyfill';
 import {
   CalendarRange,
@@ -99,6 +100,8 @@ const createSidebarEvents = (): Event[] => {
 };
 
 const useSidebarCalendar = (sidebarConfig: boolean | SidebarConfig) => {
+  const { resolvedTheme } = useTheme();
+
   const views = useMemo(
     () => [createMonthView(), createWeekView(), createDayView()],
     []
@@ -115,6 +118,12 @@ const useSidebarCalendar = (sidebarConfig: boolean | SidebarConfig) => {
   const events = useMemo(() => createSidebarEvents(), []);
   const calendars = useMemo(() => cloneCalendars(), []);
 
+  const themeMode = useMemo(() => {
+    if (resolvedTheme === 'dark') return 'dark';
+    if (resolvedTheme === 'light') return 'light';
+    return 'auto';
+  }, [resolvedTheme]);
+
   return useCalendarApp({
     views,
     plugins: [dragPlugin],
@@ -124,7 +133,7 @@ const useSidebarCalendar = (sidebarConfig: boolean | SidebarConfig) => {
     initialDate: new Date(),
     switcherMode: 'buttons',
     useSidebar: sidebarConfig,
-    theme: { mode: 'dark' }
+    theme: { mode: themeMode }
   });
 };
 
